@@ -1,0 +1,372 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// FOYDALANUVCHILAR
+// ============================================
+
+model User {
+  id         String  @id @default(uuid())
+  telegramId BigInt  @unique @map("telegram_id")
+  username   String?
+  firstName  String  @map("first_name")
+  lastName   String? @map("last_name")
+  avatarUrl  String? @map("avatar_url")
+
+  // Ovoz sozlamalari
+  voiceType         VoiceType @default(MALE_1) @map("voice_type")
+  voiceSpeed        Float     @default(1.0) @map("voice_speed")
+  volume            Int       @default(80)
+  subtitlesEnabled  Boolean   @default(true) @map("subtitles_enabled")
+  autoPlayEnabled   Boolean   @default(true) @map("auto_play_enabled")
+  atmosphereEnabled Boolean   @default(true) @map("atmosphere_enabled")
+
+  // Statistika
+  gamesPlayed     Int @default(0) @map("games_played")
+  gamesWon        Int @default(0) @map("games_won")
+  gamesAsMafia    Int @default(0) @map("games_as_mafia")
+  gamesAsCivilian Int @default(0) @map("games_as_civilian")
+  gamesAsDoctor   Int @default(0) @map("games_as_doctor")
+  gamesAsSheriff  Int @default(0) @map("games_as_sheriff")
+  gamesAsDon      Int @default(0) @map("games_as_don")
+  mafiaWins       Int @default(0) @map("mafia_wins")
+  civilianWins    Int @default(0) @map("civilian_wins")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Bog'lanishlar
+  hostedRooms Room[]       @relation("RoomHost")
+  gamePlayers GamePlayer[]
+
+  @@map("users")
+}
+
+enum VoiceType {
+  MALE_1 // Chuqur, jiddiy
+  MALE_2 // O'rtacha, do'stona
+  FEMALE_1 // Sirli, qiziqarli
+  FEMALE_2 // Energik, hayajonli
+}
+
+// ============================================
+// O'YIN XONASI
+// ============================================
+
+model Room {
+  id   String @id @default(uuid())
+  code String @unique // 6 ta harfli kod
+  name String
+
+  hostId String @map("host_id")
+  host   User   @relation("RoomHost", fields: [hostId], references: [id])
+
+  minPlayers Int @default(6) @map("min_players")
+  maxPlayers Int @default(12) @map("max_players")
+
+  // O'yin sozlamalari
+  discussionTime Int          @default(120) @map("discussion_time")
+  votingTime     Int          @default(60) @map("voting_time")
+  nightTime      Int          @default(30) @map("night_time")
+  storyVariant   StoryVariant @default(CLASSIC) @map("story_variant")
+
+  status RoomStatus @default(WAITING)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  games Game[]
+
+  @@map("rooms")
+}
+
+enum RoomStatus {
+  WAITING
+  STARTING
+  IN_GAME
+  FINISHED
+}
+
+enum StoryVariant {
+  CLASSIC
+  HORROR
+  DRAMATIC
+  EXCITING
+  MYSTERY
+}
+
+// ============================================
+// O'YIN
+// ============================================
+
+model Game {
+  id String @id @default(uuid())
+
+  roomId String @map("room_id")
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  phase        GamePhase @default(ROLE_ASSIGNMENT)
+  dayNumber    Int       @default(0) @map("day_number")
+  audioVariant Int       @default(1) @map("audio_variant")
+
+  winner TeamType?
+
+  startedAt DateTime  @default(now()) @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+
+  players GamePlayer[]
+  events  GameEvent[]
+  votes   Vote[]
+  actions NightAction[]
+
+  @@map("games")
+}
+
+enum GamePhase {
+  ROLE_ASSIGNMENT
+  NIGHT
+  MAFIA_TURN
+  SHERIFF_TURN
+  DOCTOR_TURN
+  DON_TURN
+  MORNING
+  DISCUSSION
+  VOTING
+  LAST_WORD
+  GAME_OVER
+}
+
+enum TeamType {
+  MAFIA
+  CIVILIAN
+}
+
+// ============================================
+// O'YINCHI
+// ============================================
+
+model GamePlayer {
+  id String @id @default(uuid())
+
+  gameId String @map("game_id")
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  role        PlayerRole
+  isAlive     Boolean    @default(true) @map("is_alive")
+  isProtected Boolean    @default(false) @map("is_protected")
+
+  eliminatedAt DateTime?        @map("eliminated_at")
+  eliminatedBy EliminationType? @map("eliminated_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  votesGiven    Vote[]        @relation("VoteFrom")
+  votesReceived Vote[]        @relation("VoteTo")
+  actionsFrom   NightAction[] @relation("ActionFrom")
+  actionsTo     NightAction[] @relation("ActionTo")
+
+  @@unique([gameId, userId])
+  @@map("game_players")
+}
+
+enum PlayerRole {
+  CIVILIAN
+  MAFIA
+  DON
+  SHERIFF
+  DOCTOR
+}
+
+enum EliminationType {
+  MAFIA_KILL
+  VOTED_OUT
+}
+
+// ============================================
+// O'YIN VOQEALARI
+// ============================================
+
+model GameEvent {
+  id String @id @default(uuid())
+
+  gameId String @map("game_id")
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  type      EventType
+  phase     GamePhase
+  dayNumber Int       @map("day_number")
+
+  data        Json?
+  audioPlayed String? @map("audio_played")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("game_events")
+}
+
+enum EventType {
+  GAME_STARTED
+  ROLE_ASSIGNED
+  NIGHT_STARTED
+  MAFIA_SELECTED
+  SHERIFF_CHECKED
+  DOCTOR_PROTECTED
+  DON_CHECKED
+  MORNING_ANNOUNCEMENT
+  PLAYER_KILLED
+  PLAYER_SAVED
+  DISCUSSION_STARTED
+  VOTING_STARTED
+  PLAYER_ELIMINATED
+  LAST_WORD
+  GAME_ENDED
+}
+
+// ============================================
+// OVOZ BERISH
+// ============================================
+
+model Vote {
+  id String @id @default(uuid())
+
+  gameId String @map("game_id")
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  fromPlayerId String     @map("from_player_id")
+  fromPlayer   GamePlayer @relation("VoteFrom", fields: [fromPlayerId], references: [id])
+
+  toPlayerId String     @map("to_player_id")
+  toPlayer   GamePlayer @relation("VoteTo", fields: [toPlayerId], references: [id])
+
+  dayNumber Int @map("day_number")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([gameId, fromPlayerId, dayNumber])
+  @@map("votes")
+}
+
+// ============================================
+// TUN HARAKATLARI
+// ============================================
+
+model NightAction {
+  id String @id @default(uuid())
+
+  gameId String @map("game_id")
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  fromPlayerId String     @map("from_player_id")
+  fromPlayer   GamePlayer @relation("ActionFrom", fields: [fromPlayerId], references: [id])
+
+  toPlayerId String     @map("to_player_id")
+  toPlayer   GamePlayer @relation("ActionTo", fields: [toPlayerId], references: [id])
+
+  actionType  NightActionType @map("action_type")
+  nightNumber Int             @map("night_number")
+
+  result Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("night_actions")
+}
+
+enum NightActionType {
+  MAFIA_KILL
+  SHERIFF_CHECK
+  DOCTOR_HEAL
+  DON_CHECK
+}
+
+// ============================================
+// AUDIO SKRIPTLAR
+// ============================================
+
+model AudioScript {
+  id String @id @default(uuid())
+
+  category AudioCategory
+  variant  Int           @default(1)
+
+  textUz String  @map("text_uz")
+  textRu String? @map("text_ru")
+
+  audioMale1   String? @map("audio_male_1")
+  audioMale2   String? @map("audio_male_2")
+  audioFemale1 String? @map("audio_female_1")
+  audioFemale2 String? @map("audio_female_2")
+
+  duration Int?
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([category, variant])
+  @@map("audio_scripts")
+}
+
+enum AudioCategory {
+  GAME_START
+  NIGHT_START
+  MAFIA_WAKE
+  SHERIFF_WAKE
+  DOCTOR_WAKE
+  DON_WAKE
+  MORNING_NO_DEATH
+  MORNING_DEATH
+  DISCUSSION
+  VOTING
+  ELIMINATION
+  LAST_WORD
+  WIN_CIVILIANS
+  WIN_MAFIA
+  ROLE_CIVILIAN
+  ROLE_MAFIA
+  ROLE_DON
+  ROLE_SHERIFF
+  ROLE_DOCTOR
+  PLAYER_JOINED
+  TIMER_WARNING
+}
+
+// ============================================
+// ATMOSFERA TOVUSHLARI
+// ============================================
+
+model AtmosphereSound {
+  id String @id @default(uuid())
+
+  name     String
+  category AtmosphereCategory
+  audioUrl String             @map("audio_url")
+  duration Int
+  isLoop   Boolean            @default(false) @map("is_loop")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  @@map("atmosphere_sounds")
+}
+
+enum AtmosphereCategory {
+  NIGHT_AMBIENT
+  DAY_AMBIENT
+  DRAMATIC
+  VICTORY
+  DEFEAT
+  SUSPENSE
+}

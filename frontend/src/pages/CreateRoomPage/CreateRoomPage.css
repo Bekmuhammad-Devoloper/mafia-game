@@ -1,0 +1,323 @@
+.create-room-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 20px;
+  padding-bottom: 100px;
+  color: #fff;
+}
+
+.create-room-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.create-room-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.create-room-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.form-group input[type="text"] {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input[type="text"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 5px 0 0 0;
+}
+
+/* Player Count */
+.player-count {
+  display: flex;
+  gap: 20px;
+}
+
+.player-count__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-count__label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.number-input {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.number-input button {
+  width: 45px;
+  height: 45px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.number-input button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.number-input button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.number-input span {
+  flex: 1;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* Time Settings */
+.time-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.time-setting__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-setting__icon {
+  font-size: 1.3rem;
+}
+
+.time-setting__label {
+  font-size: 0.95rem;
+}
+
+.time-setting select {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.time-setting select option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+/* Story Variant */
+.story-variant {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.story-variant__btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+.story-variant__btn:active {
+  transform: scale(0.95);
+}
+
+.story-variant__current {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Roles Preview */
+.roles-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.role-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.role-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.role-preview__icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.role-preview__icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.role-preview__icon-wrap svg {
+  width: 24px;
+  height: 24px;
+}
+
+.role-preview--civilian .role-preview__icon-wrap {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.role-preview--mafia .role-preview__icon-wrap {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.role-preview--don .role-preview__icon-wrap {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+}
+
+.role-preview--sheriff .role-preview__icon-wrap {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+.role-preview--doctor .role-preview__icon-wrap {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+.role-preview__count {
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #fff;
+  min-width: 24px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.role-preview__name {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* Create Button */
+.create-room-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(26, 26, 46, 0.98) 0%, rgba(26, 26, 46, 0.8) 50%, transparent 100%);
+}
+
+.btn-create {
+  width: 100%;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-create svg {
+  width: 24px;
+  height: 24px;
+}
+
+.btn-create:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(46, 204, 113, 0.5);
+}
+
+.btn-create:active {
+  transform: scale(0.98);
+}

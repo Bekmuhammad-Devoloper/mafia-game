@@ -1,0 +1,86 @@
+.audio-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.9) 100%);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.audio-player__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.audio-player__btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #2196F3;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.audio-player__btn:hover {
+  background: #1976D2;
+  transform: scale(1.05);
+}
+
+.audio-player__btn--stop {
+  background: #f44336;
+}
+
+.audio-player__btn--stop:hover {
+  background: #d32f2f;
+}
+
+.audio-player__volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  color: white;
+}
+
+.audio-player__slider {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  appearance: none;
+  cursor: pointer;
+}
+
+.audio-player__slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2196F3;
+  cursor: pointer;
+}
+
+.audio-player__subtitles {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 12px 16px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.audio-player__subtitles p {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}

@@ -1,0 +1,200 @@
+.rules-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 20px;
+  padding-bottom: 40px;
+  color: #fff;
+}
+
+.rules-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.rules-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rules-section {
+  margin-bottom: 30px;
+}
+
+.rules-section h2 {
+  font-size: 1.2rem;
+  margin: 0 0 15px 0;
+  color: #fff;
+}
+
+.rules-section > p {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+/* Role Cards */
+.role-card {
+  display: flex;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid #3498db;
+}
+
+.role-card--mafia {
+  border-left-color: #e74c3c;
+}
+
+.role-card--don {
+  border-left-color: #9b59b6;
+}
+
+.role-card--sheriff {
+  border-left-color: #f39c12;
+}
+
+.role-card--doctor {
+  border-left-color: #2ecc71;
+}
+
+.role-card__icon {
+  font-size: 2rem;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-card__content h3 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+}
+
+.role-card__content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Phase List */
+.phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.phase-item {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.phase-item__number {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.phase-item__content {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  flex: 1;
+}
+
+.phase-item__content h4 {
+  margin: 0 0 5px 0;
+  font-size: 0.95rem;
+}
+
+.phase-item__content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Win Conditions */
+.win-conditions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.win-condition {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.win-condition--civilian {
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.win-condition--mafia {
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.win-condition__icon {
+  font-size: 2rem;
+}
+
+.win-condition__text h4 {
+  margin: 0 0 3px 0;
+  font-size: 0.95rem;
+}
+
+.win-condition__text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Rules List */
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rules-list li {
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  padding-left: 40px;
+  position: relative;
+}
+
+.rules-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 15px;
+  color: #2ecc71;
+  font-weight: bold;
+}

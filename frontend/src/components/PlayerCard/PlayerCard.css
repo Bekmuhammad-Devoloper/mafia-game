@@ -1,0 +1,134 @@
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.player-card--selectable {
+  cursor: pointer;
+}
+
+.player-card--selectable:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.player-card--selected {
+  background: rgba(33, 150, 243, 0.3);
+  border: 2px solid #2196F3;
+}
+
+.player-card--current {
+  border: 2px solid #4CAF50;
+}
+
+.player-card--dead {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.player-card__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.player-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-card__avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.player-card__dead-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.player-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-card__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-card__role {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.player-card__role--civilian {
+  background: rgba(76, 175, 80, 0.3);
+  color: #81C784;
+}
+
+.player-card__role--mafia,
+.player-card__role--don {
+  background: rgba(244, 67, 54, 0.3);
+  color: #EF5350;
+}
+
+.player-card__role--sheriff {
+  background: rgba(33, 150, 243, 0.3);
+  color: #64B5F6;
+}
+
+.player-card__role--doctor {
+  background: rgba(156, 39, 176, 0.3);
+  color: #BA68C8;
+}
+
+.player-card__username {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
+.player-card__check {
+  width: 24px;
+  height: 24px;
+  background: #4CAF50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
