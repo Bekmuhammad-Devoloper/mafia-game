@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore, useRoomStore, useUIStore } from '../../store';
 import { ROLES, calculateRoles } from '../../constants';
+import { useTranslation } from '../../i18n';
 import './CreateRoomPage.css';
 
 interface RoomSettings {
@@ -26,6 +27,7 @@ const generateRoomCode = () => {
 
 export const CreateRoomPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useUserStore();
   const { setRoom } = useRoomStore();
   const { setLoading, setError } = useUIStore();
@@ -49,7 +51,7 @@ export const CreateRoomPage: React.FC = () => {
 
   const handleCreateRoom = async () => {
     if (!settings.name.trim()) {
-      setError('Xona nomini kiriting');
+      setError(t.createRoom.enterRoomName);
       return;
     }
 
@@ -94,30 +96,30 @@ export const CreateRoomPage: React.FC = () => {
     <div className="create-room-page">
       <header className="create-room-header">
         <button className="btn-back" onClick={() => navigate('/')}>
-          ← Orqaga
+          {t.back}
         </button>
-        <h1>➕ Yangi xona</h1>
+        <h1>{t.createRoom.title}</h1>
       </header>
 
       <div className="create-room-form">
         {/* Room Name */}
         <div className="form-group">
-          <label>Xona nomi</label>
+          <label>{t.createRoom.roomName}</label>
           <input
             type="text"
             value={settings.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            placeholder="Masalan: Do'stlar bilan o'yin"
+            placeholder={t.createRoom.roomNamePlaceholder}
             maxLength={30}
           />
         </div>
 
         {/* Players Count */}
         <div className="form-group">
-          <label>O'yinchilar soni</label>
+          <label>{t.createRoom.playersCount}</label>
           <div className="player-count">
             <div className="player-count__item">
-              <span className="player-count__label">Minimum</span>
+              <span className="player-count__label">{t.createRoom.minimum}</span>
               <div className="number-input">
                 <button 
                   onClick={() => handleChange('minPlayers', Math.max(4, settings.minPlayers - 1))}
@@ -135,7 +137,7 @@ export const CreateRoomPage: React.FC = () => {
               </div>
             </div>
             <div className="player-count__item">
-              <span className="player-count__label">Maximum</span>
+              <span className="player-count__label">{t.createRoom.maximum}</span>
               <div className="number-input">
                 <button 
                   onClick={() => handleChange('maxPlayers', Math.max(settings.minPlayers, settings.maxPlayers - 1))}
@@ -157,80 +159,83 @@ export const CreateRoomPage: React.FC = () => {
 
         {/* Time Settings */}
         <div className="form-group">
-          <label>⏱️ Vaqt sozlamalari</label>
+          <label>{t.createRoom.timeSettings}</label>
           
           <div className="time-setting">
             <div className="time-setting__info">
               <span className="time-setting__icon">💬</span>
-              <span className="time-setting__label">Muhokama vaqti</span>
+              <span className="time-setting__label">{t.createRoom.discussionTime}</span>
             </div>
             <select 
               value={settings.discussionTime}
               onChange={(e) => handleChange('discussionTime', Number(e.target.value))}
+              title={t.createRoom.discussionTime}
             >
-              <option value={60}>1 daqiqa</option>
-              <option value={90}>1.5 daqiqa</option>
-              <option value={120}>2 daqiqa</option>
-              <option value={180}>3 daqiqa</option>
-              <option value={300}>5 daqiqa</option>
+              <option value={60}>1 {t.createRoom.minute}</option>
+              <option value={90}>1.5 {t.createRoom.minutes}</option>
+              <option value={120}>2 {t.createRoom.minutes}</option>
+              <option value={180}>3 {t.createRoom.minutes}</option>
+              <option value={300}>5 {t.createRoom.minutes}</option>
             </select>
           </div>
 
           <div className="time-setting">
             <div className="time-setting__info">
               <span className="time-setting__icon">🗳️</span>
-              <span className="time-setting__label">Ovoz berish vaqti</span>
+              <span className="time-setting__label">{t.createRoom.votingTime}</span>
             </div>
             <select 
               value={settings.votingTime}
               onChange={(e) => handleChange('votingTime', Number(e.target.value))}
+              title={t.createRoom.votingTime}
             >
-              <option value={30}>30 soniya</option>
-              <option value={45}>45 soniya</option>
-              <option value={60}>1 daqiqa</option>
-              <option value={90}>1.5 daqiqa</option>
+              <option value={30}>30 {t.createRoom.seconds}</option>
+              <option value={45}>45 {t.createRoom.seconds}</option>
+              <option value={60}>1 {t.createRoom.minute}</option>
+              <option value={90}>1.5 {t.createRoom.minutes}</option>
             </select>
           </div>
 
           <div className="time-setting">
             <div className="time-setting__info">
               <span className="time-setting__icon">🌙</span>
-              <span className="time-setting__label">Tun vaqti</span>
+              <span className="time-setting__label">{t.createRoom.nightTime}</span>
             </div>
             <select 
               value={settings.nightTime}
               onChange={(e) => handleChange('nightTime', Number(e.target.value))}
+              title={t.createRoom.nightTime}
             >
-              <option value={20}>20 soniya</option>
-              <option value={30}>30 soniya</option>
-              <option value={45}>45 soniya</option>
-              <option value={60}>1 daqiqa</option>
+              <option value={20}>20 {t.createRoom.seconds}</option>
+              <option value={30}>30 {t.createRoom.seconds}</option>
+              <option value={45}>45 {t.createRoom.seconds}</option>
+              <option value={60}>1 {t.createRoom.minute}</option>
             </select>
           </div>
         </div>
 
         {/* Story Variant */}
         <div className="form-group">
-          <label>🎭 Hikoya varianti</label>
+          <label>{t.createRoom.storyVariant}</label>
           <div className="story-variant">
             <button 
               className="story-variant__btn"
               onClick={() => handleChange('storyVariant', Math.floor(Math.random() * 50) + 1)}
             >
-              🎲 Tasodifiy
+              {t.createRoom.randomStory}
             </button>
             <span className="story-variant__current">
-              Variant #{settings.storyVariant}
+              {t.createRoom.variant} #{settings.storyVariant}
             </span>
           </div>
           <p className="form-hint">
-            50 dan ortiq turli hikoya varianti mavjud. Har safar yangi tajriba!
+            {t.createRoom.storyHint}
           </p>
         </div>
 
         {/* Roles Preview */}
         <div className="form-group">
-          <label>🎭 Rollar taqsimoti ({settings.maxPlayers} o'yinchi uchun)</label>
+          <label>{t.createRoom.rolesDistribution} ({settings.maxPlayers} {t.createRoom.playersFor})</label>
           <div className="roles-preview">
             <div className="role-preview role-preview--civilian">
               <div className="role-preview__icon-wrap">
@@ -275,7 +280,7 @@ export const CreateRoomPage: React.FC = () => {
       <div className="create-room-actions">
         <button className="btn-create" onClick={handleCreateRoom}>
           <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-          Xona yaratish
+          {t.createRoom.create}
         </button>
       </div>
     </div>

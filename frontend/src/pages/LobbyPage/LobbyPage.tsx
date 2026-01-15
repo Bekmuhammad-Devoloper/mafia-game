@@ -173,7 +173,7 @@ const LobbyPage: React.FC = () => {
   if (!displayRoom) {
     return (
       <div className="lobby-page lobby-page--loading">
-        <div className="loader">{Icons.loader}</div>
+        <img src="/images/logo.png" alt="Loading" className="loader-logo" />
         <p>Xona yuklanmoqda...</p>
       </div>
     );

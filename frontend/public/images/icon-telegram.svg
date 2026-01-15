@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="tgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#40c4ff"/>
+      <stop offset="100%" stop-color="#0288d1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="20" fill="url(#tgGrad)"/>
+  <path d="M12 23L32 15L28 35L22 27L12 23Z" fill="white"/>
+  <path d="M22 27L24 33L28 35L22 27Z" fill="#cce5ff"/>
+  <path d="M22 27L32 15" stroke="white" stroke-width="2"/>
+</svg>

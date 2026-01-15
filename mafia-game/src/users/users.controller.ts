@@ -11,9 +11,11 @@ export class UsersController {
   @Get('leaderboard')
   @ApiOperation({ summary: 'Liderlar jadvali' })
   @ApiResponse({ status: 200, description: 'Liderlar ro\'yxati' })
-  async getLeaderboard(@Query('limit') limit?: number) {
-    const users = await this.usersService.getLeaderboard(limit || 20);
-    return users.map(user => this.usersService.toJSON(user));
+  async getLeaderboard(
+    @Query('limit') limit?: number,
+    @Query('period') period?: string,
+  ) {
+    return this.usersService.getLeaderboard(limit || 20, period || 'all');
   }
 
   @Get(':id')

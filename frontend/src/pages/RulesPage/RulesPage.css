@@ -82,6 +82,13 @@
   justify-content: center;
 }
 
+.role-card__icon-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
 .role-card__content h3 {
   margin: 0 0 5px 0;
   font-size: 1rem;
@@ -91,6 +98,14 @@
   margin: 0;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* Section icon */
+.section-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
 }
 
 /* Phase List */
@@ -103,7 +118,7 @@
 .phase-item {
   display: flex;
   gap: 15px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .phase-item__number {
@@ -115,6 +130,13 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  flex-shrink: 0;
+}
+
+.phase-item__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
 
@@ -162,6 +184,13 @@
 
 .win-condition__icon {
   font-size: 2rem;
+}
+
+.win-condition__icon-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .win-condition__text h4 {

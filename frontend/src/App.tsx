@@ -75,6 +75,7 @@ const App: React.FC = () => {
           firstName: tgUser.first_name,
           lastName: tgUser.last_name,
           username: tgUser.username,
+          avatarUrl: (tgUser as any).photo_url,
           voiceType: 'MALE_1',
           voiceSpeed: 1.0,
           volume: 80,

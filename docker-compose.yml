@@ -2,33 +2,38 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: mafia-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER:-mafia_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mafia_secure_2026}
       POSTGRES_DB: mafia_game
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - mafia-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mafia_user} -d mafia_game"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
-      context: ./backend
+      context: ./mafia-game
       dockerfile: Dockerfile
     container_name: mafia-backend
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/mafia_game?schema=public
+      - DATABASE_URL=postgresql://${DB_USER:-mafia_user}:${DB_PASSWORD:-mafia_secure_2026}@postgres:5432/mafia_game?schema=public
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_WEBAPP_URL=${TELEGRAM_WEBAPP_URL}
+      - PORT=3000
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - mafia-network
     volumes:
@@ -38,18 +43,45 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-/api}
+        - VITE_WS_URL=${VITE_WS_URL:-wss://mafia.example.com}
     container_name: mafia-frontend
     restart: unless-stopped
-    ports:
-      - "5173:80"
     depends_on:
       - backend
     networks:
       - mafia-network
 
+  nginx:
+    image: nginx:alpine
+    container_name: mafia-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - certbot_data:/var/www/certbot:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - mafia-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: mafia-certbot
+    volumes:
+      - ./nginx/ssl:/etc/letsencrypt
+      - certbot_data:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 volumes:
   postgres_data:
   audio_cache:
+  certbot_data:
 
 networks:
   mafia-network:

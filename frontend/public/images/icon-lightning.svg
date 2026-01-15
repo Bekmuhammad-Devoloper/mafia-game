@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="lightningGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+  <path d="M28 4L12 26H22L18 44L38 20H26L28 4Z" fill="url(#lightningGrad)"/>
+  <path d="M26 8L14 26H22L19 38L34 22H26L26 8Z" fill="#fef08a" opacity="0.6"/>
+</svg>

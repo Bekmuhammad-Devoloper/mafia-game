@@ -22,9 +22,8 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    async getLeaderboard(limit) {
-        const users = await this.usersService.getLeaderboard(limit || 20);
-        return users.map(user => this.usersService.toJSON(user));
+    async getLeaderboard(limit, period) {
+        return this.usersService.getLeaderboard(limit || 20, period || 'all');
     }
     async getUser(id) {
         const user = await this.usersService.findById(id);
@@ -44,8 +43,9 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Liderlar jadvali' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Liderlar ro\'yxati' }),
     __param(0, (0, common_1.Query)('limit')),
+    __param(1, (0, common_1.Query)('period')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getLeaderboard", null);
 __decorate([

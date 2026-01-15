@@ -5,6 +5,7 @@ import { TelegramService } from './telegram.service';
 import { TelegramUpdate } from './telegram.update';
 import { UsersModule } from '../users/users.module';
 import { RoomsModule } from '../rooms/rooms.module';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 @Module({
   imports: [
@@ -12,26 +13,29 @@ import { RoomsModule } from '../rooms/rooms.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const isProduction = configService.get('NODE_ENV') === 'production';
+        const proxyUrl = configService.get('TELEGRAM_PROXY_URL');
+        
         console.log('🤖 Telegram bot configuration:', {
           isProduction,
           tokenExists: !!configService.get('TELEGRAM_BOT_TOKEN'),
           webAppUrl: configService.get('TELEGRAM_WEBAPP_URL'),
+          proxyEnabled: !!proxyUrl,
         });
         
-        return {
+        // Agar proxy URL berilgan bo'lsa, agent yaratamiz
+        const telegrafOptions: any = {
           token: configService.get('TELEGRAM_BOT_TOKEN') || '',
-          launchOptions: isProduction
-            ? {
-                webhook: {
-                  domain: configService.get('TELEGRAM_WEBHOOK_URL') || '',
-                  hookPath: '/webhook',
-                },
-              }
-            : {
-                // Development rejimida polling ishlatiladi
-                dropPendingUpdates: true,
-              },
         };
+
+        if (proxyUrl) {
+          const agent = new HttpsProxyAgent(proxyUrl);
+          telegrafOptions.telegram = {
+            agent: agent,
+          };
+          console.log('🔄 Telegram proxy orqali ulanadi:', proxyUrl);
+        }
+        
+        return telegrafOptions;
       },
       inject: [ConfigService],
     }),

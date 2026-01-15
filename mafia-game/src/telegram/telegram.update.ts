@@ -37,7 +37,7 @@ Bu Telegram'dagi eng immersiv Mafia o'yini. Professional ovozli hikoyachi har bi
 
 📱 <b>Buyruqlar:</b>
 /newroom - Yangi xona yaratish
-/join <kod> - Xonaga qo'shilish
+/join [kod] - Xonaga qo'shilish
 /rooms - Ochiq xonalar
 /stats - Statistikangiz
 /rules - O'yin qoidalari
@@ -186,7 +186,7 @@ Web App ishga tushgandan so'ng sozlamalar mavjud bo'ladi.
 
 📱 Buyruqlar:
 /newroom - Yangi xona yaratish
-/join <kod> - Xonaga qo'shilish
+/join [kod] - Xonaga qo'shilish
 /rooms - Ochiq xonalar
 /stats - Statistikangiz
     `.trim();

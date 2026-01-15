@@ -17,6 +17,7 @@ export class TelegramService {
    */
   async sendWebAppButton(chatId: number, text: string, webAppUrl: string) {
     await this.bot.telegram.sendMessage(chatId, text, {
+      parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
           [

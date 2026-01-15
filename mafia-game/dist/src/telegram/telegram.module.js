@@ -14,6 +14,7 @@ const telegram_service_1 = require("./telegram.service");
 const telegram_update_1 = require("./telegram.update");
 const users_module_1 = require("../users/users.module");
 const rooms_module_1 = require("../rooms/rooms.module");
+const https_proxy_agent_1 = require("https-proxy-agent");
 let TelegramModule = class TelegramModule {
 };
 exports.TelegramModule = TelegramModule;
@@ -24,24 +25,24 @@ exports.TelegramModule = TelegramModule = __decorate([
                 imports: [config_1.ConfigModule],
                 useFactory: (configService) => {
                     const isProduction = configService.get('NODE_ENV') === 'production';
+                    const proxyUrl = configService.get('TELEGRAM_PROXY_URL');
                     console.log('🤖 Telegram bot configuration:', {
                         isProduction,
                         tokenExists: !!configService.get('TELEGRAM_BOT_TOKEN'),
                         webAppUrl: configService.get('TELEGRAM_WEBAPP_URL'),
+                        proxyEnabled: !!proxyUrl,
                     });
-                    return {
+                    const telegrafOptions = {
                         token: configService.get('TELEGRAM_BOT_TOKEN') || '',
-                        launchOptions: isProduction
-                            ? {
-                                webhook: {
-                                    domain: configService.get('TELEGRAM_WEBHOOK_URL') || '',
-                                    hookPath: '/webhook',
-                                },
-                            }
-                            : {
-                                dropPendingUpdates: true,
-                            },
                     };
+                    if (proxyUrl) {
+                        const agent = new https_proxy_agent_1.HttpsProxyAgent(proxyUrl);
+                        telegrafOptions.telegram = {
+                            agent: agent,
+                        };
+                        console.log('🔄 Telegram proxy orqali ulanadi:', proxyUrl);
+                    }
+                    return telegrafOptions;
                 },
                 inject: [config_1.ConfigService],
             }),

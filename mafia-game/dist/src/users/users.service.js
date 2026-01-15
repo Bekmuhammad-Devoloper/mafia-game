@@ -78,8 +78,19 @@ let UsersService = class UsersService {
             },
         });
     }
-    async getLeaderboard(limit = 20) {
-        return this.prisma.user.findMany({
+    async getLeaderboard(limit = 20, period = 'all') {
+        let dateFilter = {};
+        const now = new Date();
+        if (period === 'week') {
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            dateFilter = { updatedAt: { gte: weekAgo } };
+        }
+        else if (period === 'month') {
+            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            dateFilter = { updatedAt: { gte: monthAgo } };
+        }
+        const users = await this.prisma.user.findMany({
+            where: dateFilter,
             orderBy: [
                 { gamesWon: 'desc' },
                 { gamesPlayed: 'desc' },
@@ -97,6 +108,13 @@ let UsersService = class UsersService {
                 civilianWins: true,
             },
         });
+        return users.map((user, index) => ({
+            ...user,
+            rank: index + 1,
+            winRate: user.gamesPlayed > 0
+                ? Math.round((user.gamesWon / user.gamesPlayed) * 100)
+                : 0,
+        }));
     }
     async getUserStats(userId) {
         const user = await this.findById(userId);

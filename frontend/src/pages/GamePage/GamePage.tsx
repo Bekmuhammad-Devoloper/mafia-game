@@ -149,7 +149,7 @@ export const GamePage: React.FC = () => {
   if (!game) {
     return (
       <div className="game-page game-page--loading">
-        <div className="loader">🎭</div>
+        <img src="/images/logo.png" alt="Loading" className="loader-logo" />
         <p>O'yin yuklanmoqda...</p>
       </div>
     );

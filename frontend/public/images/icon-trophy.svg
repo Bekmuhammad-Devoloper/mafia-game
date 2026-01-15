@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="trophyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <path d="M12 6H36V18C36 26 30 32 24 32C18 32 12 26 12 18V6Z" fill="url(#trophyGrad)"/>
+  <path d="M12 10H6C6 10 4 10 4 14C4 18 8 20 12 18" fill="url(#trophyGrad)"/>
+  <path d="M36 10H42C42 10 44 10 44 14C44 18 40 20 36 18" fill="url(#trophyGrad)"/>
+  <rect x="20" y="32" width="8" height="6" fill="url(#trophyGrad)"/>
+  <rect x="14" y="38" width="20" height="6" rx="2" fill="url(#trophyGrad)"/>
+  <path d="M20 14L22 18H26L23 20L24 24L21 22L18 24L19 20L16 18H20L20 14Z" fill="white" opacity="0.9"/>
+</svg>

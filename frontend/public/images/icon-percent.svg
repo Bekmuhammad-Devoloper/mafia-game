@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="percentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="20" stroke="url(#percentGrad)" stroke-width="4" fill="none" opacity="0.3"/>
+  <path d="M24 4 A20 20 0 0 1 44 24" stroke="url(#percentGrad)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="14" cy="16" r="4" fill="url(#percentGrad)"/>
+  <circle cx="34" cy="32" r="4" fill="url(#percentGrad)"/>
+  <path d="M32 14L16 34" stroke="url(#percentGrad)" stroke-width="3" stroke-linecap="round"/>
+</svg>

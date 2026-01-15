@@ -138,7 +138,9 @@ export declare class UsersService {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    getLeaderboard(limit?: number): Promise<{
+    getLeaderboard(limit?: number, period?: string): Promise<{
+        rank: number;
+        winRate: number;
         username: string | null;
         firstName: string;
         lastName: string | null;

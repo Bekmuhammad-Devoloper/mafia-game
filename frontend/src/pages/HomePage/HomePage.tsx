@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../services';
 import { useUIStore } from '../../store';
+import { useTranslation } from '../../i18n';
 import './HomePage.css';
 
 // Modern SVG Icons
@@ -55,6 +56,7 @@ const Icons = {
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { setLoading, setError } = useUIStore();
+  const { t } = useTranslation();
   const [roomCode, setRoomCode] = useState('');
   const [availableRooms, setAvailableRooms] = useState<any[]>([]);
   const [logoError, setLogoError] = useState(false);
@@ -78,7 +80,7 @@ export const HomePage: React.FC = () => {
 
   const handleJoinByCode = async () => {
     if (!roomCode.trim()) {
-      setError('Xona kodini kiriting');
+      setError(t.home.enterRoomCode);
       return;
     }
     
@@ -86,7 +88,7 @@ export const HomePage: React.FC = () => {
     
     // Kod formatini tekshirish (6 ta belgi)
     if (code.length < 4 || code.length > 8) {
-      setError('Xona kodi 4-8 ta belgidan iborat bo\'lishi kerak');
+      setError(t.home.invalidRoomCode);
       return;
     }
     
@@ -109,7 +111,7 @@ export const HomePage: React.FC = () => {
       navigate(`/lobby/${code}`);
       
     } catch (error: any) {
-      setError(error.message || 'Xona topilmadi');
+      setError(error.message || t.home.roomNotFound);
     } finally {
       setLoading(false);
     }
@@ -146,35 +148,35 @@ export const HomePage: React.FC = () => {
           )}
         </div>
         <h1>MAFIYA</h1>
-        <p className="home-subtitle">Ovozli boshlovchi bilan</p>
+        <p className="home-subtitle">{t.home.subtitle}</p>
       </header>
 
       <section className="home-section">
-        <h2>Tezkor kirish</h2>
+        <h2>{t.home.quickAccess}</h2>
         
         <button className="btn btn--primary btn--large" onClick={handleCreateRoom}>
           <span className="btn-icon">{Icons.create}</span>
-          Yangi xona yaratish
+          {t.home.createRoom}
         </button>
         
         <div className="join-code">
           <input
             type="text"
-            placeholder="Xona kodi (masalan: ABC123)"
+            placeholder={t.home.roomCodePlaceholder}
             value={roomCode}
             onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
             maxLength={6}
           />
           <button className="btn btn--secondary" onClick={handleJoinByCode}>
             <span className="btn-icon">{Icons.enter}</span>
-            Kirish
+            {t.home.join}
           </button>
         </div>
       </section>
 
       {availableRooms.length > 0 && (
         <section className="home-section">
-          <h2>Ochiq xonalar</h2>
+          <h2>{t.home.openRooms}</h2>
           <div className="rooms-list">
             {availableRooms.map((room) => (
               <div key={room.id} className="room-item" onClick={() => handleJoinRoom(room.id)}>
@@ -195,19 +197,19 @@ export const HomePage: React.FC = () => {
       <nav className="home-nav">
         <button onClick={() => navigate('/stats')}>
           <span className="nav-icon">{Icons.stats}</span>
-          <span className="nav-label">Statistika</span>
+          <span className="nav-label">{t.home.stats}</span>
         </button>
         <button onClick={() => navigate('/leaderboard')}>
           <span className="nav-icon">{Icons.trophy}</span>
-          <span className="nav-label">Reyting</span>
+          <span className="nav-label">{t.home.leaderboard}</span>
         </button>
         <button onClick={() => navigate('/rules')}>
           <span className="nav-icon">{Icons.rules}</span>
-          <span className="nav-label">Qoidalar</span>
+          <span className="nav-label">{t.home.rules}</span>
         </button>
         <button onClick={() => navigate('/settings')}>
           <span className="nav-icon">{Icons.settings}</span>
-          <span className="nav-label">Sozlamalar</span>
+          <span className="nav-label">{t.home.settings}</span>
         </button>
       </nav>
     </div>

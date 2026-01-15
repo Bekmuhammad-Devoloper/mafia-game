@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment files (maxfiy ma'lumotlar)
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Audio cache (production da yaratiladi)
+audio-cache/
+
+# SSL certificates (production da yaratiladi)
+nginx/ssl/
+certbot/
+
+# Temporary files
+*.tmp
+*.temp

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="32" cy="32" r="30" fill="url(#maleGrad)" stroke="#3498db" stroke-width="2"/>
+  <!-- Head -->
+  <circle cx="32" cy="22" r="10" fill="#fad7a0"/>
+  <!-- Hair -->
+  <path d="M22 18c0-6 4-10 10-10s10 4 10 10c0-4-4-6-10-6s-10 2-10 6z" fill="#5d4e37"/>
+  <!-- Eyes -->
+  <circle cx="28" cy="22" r="2" fill="#2c3e50"/>
+  <circle cx="36" cy="22" r="2" fill="#2c3e50"/>
+  <!-- Smile -->
+  <path d="M28 26c2 2 6 2 8 0" stroke="#2c3e50" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Body -->
+  <path d="M20 52V42c0-6 5-10 12-10s12 4 12 10v10" fill="#3498db"/>
+  <!-- Collar -->
+  <path d="M28 32l4 4 4-4" fill="#2980b9"/>
+  <!-- Microphone -->
+  <rect x="44" y="38" width="6" height="12" rx="3" fill="#2c3e50"/>
+  <path d="M47 50v4M44 54h6" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+  <!-- Sound waves -->
+  <path d="M52 42c2 0 3 2 3 4s-1 4-3 4" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path d="M54 40c3 0 5 3 5 6s-2 6-5 6" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <defs>
+    <linearGradient id="maleGrad" x1="0" y1="0" x2="64" y2="64">
+      <stop offset="0%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#2980b9"/>
+    </linearGradient>
+  </defs>
+</svg>

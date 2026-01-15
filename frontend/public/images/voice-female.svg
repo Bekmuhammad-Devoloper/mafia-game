@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="32" cy="32" r="30" fill="url(#femaleGrad)" stroke="#e91e63" stroke-width="2"/>
+  <!-- Head -->
+  <circle cx="32" cy="22" r="10" fill="#fad7a0"/>
+  <!-- Hair -->
+  <path d="M20 22c0-8 5-14 12-14s12 6 12 14c0 0 0-8-6-10 0 4-2 6-6 6s-6-2-6-6c-6 2-6 10-6 10z" fill="#5d3a1a"/>
+  <path d="M20 22c-1 8 0 18 0 18l4-8c0 0 1 6 8 6s8-6 8-6l4 8s1-10 0-18" fill="#5d3a1a"/>
+  <!-- Eyes -->
+  <circle cx="28" cy="22" r="2" fill="#2c3e50"/>
+  <circle cx="36" cy="22" r="2" fill="#2c3e50"/>
+  <!-- Eyelashes -->
+  <path d="M26 19l-1-2M28 19v-2M30 19l1-2" stroke="#2c3e50" stroke-width="0.5"/>
+  <path d="M34 19l-1-2M36 19v-2M38 19l1-2" stroke="#2c3e50" stroke-width="0.5"/>
+  <!-- Smile -->
+  <path d="M28 26c2 2 6 2 8 0" stroke="#2c3e50" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Lips -->
+  <ellipse cx="32" cy="27" rx="3" ry="1" fill="#e91e63" opacity="0.5"/>
+  <!-- Body -->
+  <path d="M20 52V44c0-6 5-12 12-12s12 6 12 12v8" fill="#e91e63"/>
+  <!-- Collar -->
+  <ellipse cx="32" cy="34" rx="6" ry="2" fill="#c2185b"/>
+  <!-- Microphone -->
+  <rect x="44" y="38" width="6" height="12" rx="3" fill="#2c3e50"/>
+  <path d="M47 50v4M44 54h6" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+  <!-- Sound waves -->
+  <path d="M52 42c2 0 3 2 3 4s-1 4-3 4" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path d="M54 40c3 0 5 3 5 6s-2 6-5 6" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <defs>
+    <linearGradient id="femaleGrad" x1="0" y1="0" x2="64" y2="64">
+      <stop offset="0%" stop-color="#e91e63"/>
+      <stop offset="100%" stop-color="#c2185b"/>
+    </linearGradient>
+  </defs>
+</svg>
