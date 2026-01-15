@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { GamePage } from './pages/GamePage';
 import { LobbyPage } from './pages/LobbyPage';
@@ -123,32 +123,52 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className="app">
-        {/* Global Error Toast */}
-        {error && (
-          <div className="error-toast">
-            <span>⚠️ {error}</span>
-            <button onClick={() => setError(undefined)}>✕</button>
-          </div>
-        )}
-
-        {/* Audio Player - Global */}
-        <AudioPlayer />
-
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/create-room" element={<CreateRoomPage />} />
-          <Route path="/lobby/:roomId" element={<LobbyPage />} />
-          <Route path="/game/:roomId" element={<GamePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/stats" element={<StatsPage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/rules" element={<RulesPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
+      <AppContent />
     </BrowserRouter>
+  );
+};
+
+// Alohida komponent - BrowserRouter ichida ishlaydi
+const AppContent: React.FC = () => {
+  const { error, setError } = useUIStore();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // URL parametridan xona kodini olish va yo'naltirish
+  useEffect(() => {
+    const roomCode = searchParams.get('room');
+    if (roomCode) {
+      console.log('🏠 Xona kodiga yo\'naltirilmoqda:', roomCode);
+      navigate(`/lobby/${roomCode}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
+
+  return (
+    <div className="app">
+      {/* Global Error Toast */}
+      {error && (
+        <div className="error-toast">
+          <span>⚠️ {error}</span>
+          <button onClick={() => setError(undefined)}>✕</button>
+        </div>
+      )}
+
+      {/* Audio Player - Global */}
+      <AudioPlayer />
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create-room" element={<CreateRoomPage />} />
+        <Route path="/lobby/:roomId" element={<LobbyPage />} />
+        <Route path="/game/:roomId" element={<GamePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/stats" element={<StatsPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/rules" element={<RulesPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
   );
 };
 

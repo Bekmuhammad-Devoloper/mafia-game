@@ -53,7 +53,38 @@ async function bootstrap() {
     const user = ctx.from;
     if (!user) return;
     
-    console.log('📨 /start buyrug\'i qabul qilindi:', user.first_name);
+    // Deep link parametrini olish (xona kodi)
+    const startPayload = ctx.message.text.split(' ')[1]; // /start ROOMCODE
+    
+    console.log('📨 /start buyrug\'i qabul qilindi:', user.first_name, startPayload ? `(xona: ${startPayload})` : '');
+    
+    // Agar xona kodi berilgan bo'lsa, to'g'ridan-to'g'ri xonaga yo'naltirish
+    if (startPayload) {
+      const roomUrl = `${webAppUrl}?room=${startPayload}`;
+      
+      const text = `
+🎭 <b>Mafia O'yini - Xonaga Qo'shilish</b>
+
+Salom, ${user.first_name}! 
+
+Sizni <b>${startPayload}</b> xonasiga taklif qilishdi.
+O'yinga qo'shilish uchun quyidagi tugmani bosing:
+      `.trim();
+
+      await ctx.replyWithHTML(text, {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: '🎮 Xonaga qo\'shilish',
+                web_app: { url: roomUrl },
+              },
+            ],
+          ],
+        },
+      });
+      return;
+    }
     
     const text = `
 🎭 <b>Mafia O'yini - Ovozli Hikoyachi bilan</b>
