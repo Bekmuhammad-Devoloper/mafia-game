@@ -81,6 +81,80 @@ async function bootstrap() {
   // Webhook endpoint
   app.use(bot.webhookCallback(webhookPath));
   
+  // Bot command handler'lari
+  bot.command('start', async (ctx) => {
+    const user = ctx.from;
+    if (!user) return;
+
+    const webAppUrl = configService.get('TELEGRAM_WEBAPP_URL') || 'https://mafiya.bekmuhammad.uz';
+    
+    const text = `
+🎭 <b>Mafia O'yini - Ovozli Hikoyachi bilan</b>
+
+Xush kelibsiz, ${user.first_name}! 
+
+Bu Telegram'dagi eng immersiv Mafia o'yini. Professional ovozli hikoyachi har bir momentni maxsus va unutilmas qiladi!
+
+📋 <b>Qanday o'ynash:</b>
+1. 🎮 O'yinni ochish tugmasini bosing
+2. 🏠 Xona yarating yoki mavjudiga qo'shiling
+3. 🎲 O'yin boshlanishini kuting
+4. 🎧 Ovozli hikoyachini eshiting va o'ynang!
+
+📱 <b>Buyruqlar:</b>
+/start - Botni boshlash
+/help - Yordam
+    `.trim();
+
+    await ctx.replyWithHTML(text, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: '🎮 O\'yinni ochish',
+              web_app: { url: webAppUrl },
+            },
+          ],
+        ],
+      },
+    });
+  });
+
+  bot.command('help', async (ctx) => {
+    const text = `
+🎭 <b>Mafia O'yini - Yordam</b>
+
+📱 <b>Asosiy buyruqlar:</b>
+/start - Botni boshlash
+/help - Yordam
+
+🎮 <b>O'yin haqida:</b>
+Mafia - bu klassik ijtimoiy detektiv o'yini. O'yinchilar ikki jamoaga bo'linadi: Tinch aholi va Mafia.
+
+🌙 <b>Tun:</b>
+- Mafia birini o'ldiradi
+- Komissar birini tekshiradi  
+- Doktor birini himoya qiladi
+
+☀️ <b>Kun:</b>
+- O'yinchilar muhokama qiladi
+- Ovoz berish orqali birini chiqaradi
+
+🏆 <b>G'alaba:</b>
+- Tinch aholi: Barcha mafialarni yo'q qilish
+- Mafia: Tinch aholi soniga teng bo'lish
+    `.trim();
+
+    await ctx.replyWithHTML(text);
+  });
+
+  bot.on('message', async (ctx) => {
+    console.log('📨 Xabar qabul qilindi:', {
+      from: ctx.from?.username || ctx.from?.id,
+      text: 'text' in ctx.message ? ctx.message.text : 'non-text message',
+    });
+  });
+  
   // Graceful shutdown
   process.once('SIGINT', async () => {
     await bot.telegram.deleteWebhook();
