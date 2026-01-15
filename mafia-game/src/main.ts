@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { getBotToken } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -42,8 +42,11 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  // Telegram botni ishga tushirish (webhook rejimda)
-  const bot = app.get<Telegraf>(getBotToken());
+  // Manual Telegraf instance yaratish (nestjs-telegraf o'rniga)
+  const configService = app.get(ConfigService);
+  const token = configService.get('TELEGRAM_BOT_TOKEN');
+  const bot = new Telegraf(token);
+  
   const webhookDomain = process.env.TELEGRAM_WEBHOOK_DOMAIN || 'https://mafiya.bekmuhammad.uz';
   const webhookPath = '/webhook/telegram';
   
@@ -81,11 +84,9 @@ async function bootstrap() {
   // Graceful shutdown
   process.once('SIGINT', async () => {
     await bot.telegram.deleteWebhook();
-    bot.stop('SIGINT');
   });
   process.once('SIGTERM', async () => {
     await bot.telegram.deleteWebhook();
-    bot.stop('SIGTERM');
   });
   
   console.log(`
