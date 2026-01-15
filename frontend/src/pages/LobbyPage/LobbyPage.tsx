@@ -155,34 +155,58 @@ const LobbyPage: React.FC = () => {
       joinRoom();
     }
 
-    // Socket events - backend event nomlari: player_joined, player_left
+    // Socket events - backend event nomlari: room_players, player_joined, player_left
+    
+    // Xonaga kirganda barcha o'yinchilar ro'yxatini olish
+    socketService.on('room_players', (data: any) => {
+      console.log('Room players received:', data);
+      if (data.players && activeRoom) {
+        const formattedPlayers = data.players.map((p: any, index: number) => ({
+          id: p.oderId,
+          oderId: p.oderId,
+          oderId: (index + 1).toString(),
+          userId: p.oderId,
+          user: {
+            id: p.oderId,
+            firstName: p.userName || 'Mehmon',
+          }
+        }));
+        updateRoom({ players: formattedPlayers });
+      }
+    });
+    
+    // Yangi o'yinchi qo'shilganda
     socketService.on('player_joined', (data: any) => {
       console.log('Player joined:', data);
-      // Yangi o'yinchini qo'shish
-      if (activeRoom && data.oderId !== user?.id) {
-        const newPlayer = {
-          id: data.oderId,
-          oderId: data.oderId,
-          userId: data.oderId,
+      // Barcha o'yinchilar ro'yxatini yangilash
+      if (data.players && activeRoom) {
+        const formattedPlayers = data.players.map((p: any, index: number) => ({
+          id: p.oderId,
+          oderId: (index + 1).toString(),
+          userId: p.oderId,
           user: {
-            id: data.oderId,
-            firstName: data.userName || 'Mehmon',
+            id: p.oderId,
+            firstName: p.userName || 'Mehmon',
           }
-        };
-        const currentPlayers = activeRoom.players || [];
-        if (!currentPlayers.some(p => p.oderId === data.oderId || p.userId === data.oderId)) {
-          updateRoom({ players: [...currentPlayers, newPlayer] });
-        }
+        }));
+        updateRoom({ players: formattedPlayers });
       }
     });
 
+    // O'yinchi ketganda
     socketService.on('player_left', (data: any) => {
       console.log('Player left:', data);
-      if (activeRoom) {
-        const updatedPlayers = (activeRoom.players || []).filter(
-          p => p.oderId !== data.oderId && p.userId !== data.oderId
-        );
-        updateRoom({ players: updatedPlayers });
+      if (data.players && activeRoom) {
+        const formattedPlayers = data.players.map((p: any, index: number) => ({
+          id: p.oderId,
+          oderId: (index + 1).toString(),
+          userId: p.oderId,
+          user: {
+            id: p.oderId,
+            firstName: p.userName || 'Mehmon',
+          }
+        }));
+        updateRoom({ players: formattedPlayers });
       }
     });
 
@@ -195,6 +219,7 @@ const LobbyPage: React.FC = () => {
     });
 
     return () => {
+      socketService.off('room_players');
       socketService.off('player_joined');
       socketService.off('player_left');
       socketService.off('game_started');

@@ -45,10 +45,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private logger = new Logger('GameGateway');
   
   // Socket ID -> User mapping
-  private socketUsers: Map<string, { oderId: string; roomId: string }> = new Map();
+  private socketUsers: Map<string, { oderId: string; roomId: string; userName: string }> = new Map();
   
   // Room -> Sockets mapping
   private roomSockets: Map<string, Set<string>> = new Map();
+  
+  // Room -> Players mapping (o'yinchilar ro'yxati)
+  private roomPlayers: Map<string, Map<string, { oderId: string; userName: string }>> = new Map();
 
   constructor(
     private gameService: GameService,
@@ -74,12 +77,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         roomSockets.delete(client.id);
       }
       
+      // O'yinchilar ro'yxatidan o'chirish
+      const roomPlayers = this.roomPlayers.get(userData.roomId);
+      if (roomPlayers) {
+        roomPlayers.delete(userData.oderId);
+      }
+      
+      // Qolgan o'yinchilar ro'yxatini olish
+      const remainingPlayers = roomPlayers ? Array.from(roomPlayers.values()) : [];
+      
       // Boshqa o'yinchilarga xabar berish
       this.server.to(userData.roomId).emit('player_left', {
         oderId: userData.oderId,
+        players: remainingPlayers,
       });
       
       this.socketUsers.delete(client.id);
+      
+      this.logger.log(`User ${userData.oderId} left room ${userData.roomId}. Remaining players: ${remainingPlayers.length}`);
     }
   }
 
@@ -94,27 +109,46 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   ) {
     const { roomId, oderId, userName } = payload;
     
+    this.logger.log(`Join room request: roomId=${roomId}, oderId=${oderId}, userName=${userName}`);
+    
     // Socket ni xonaga qo'shish
     client.join(roomId);
     
     // Mappinglarni yangilash
-    this.socketUsers.set(client.id, { oderId, roomId });
+    this.socketUsers.set(client.id, { oderId, roomId, userName });
     
     if (!this.roomSockets.has(roomId)) {
       this.roomSockets.set(roomId, new Set());
     }
     this.roomSockets.get(roomId)!.add(client.id);
     
-    // Boshqa o'yinchilarga xabar berish
-    this.server.to(roomId).emit('player_joined', {
-      oderId,
-      userName,
-      playersCount: this.roomSockets.get(roomId)?.size || 0,
+    // O'yinchilar ro'yxatini yangilash
+    if (!this.roomPlayers.has(roomId)) {
+      this.roomPlayers.set(roomId, new Map());
+    }
+    this.roomPlayers.get(roomId)!.set(oderId, { oderId, userName });
+    
+    // Barcha o'yinchilar ro'yxatini olish
+    const allPlayers = Array.from(this.roomPlayers.get(roomId)!.values());
+    
+    this.logger.log(`Room ${roomId} players: ${JSON.stringify(allPlayers)}`);
+    
+    // Yangi kirganga barcha mavjud o'yinchilarni yuborish
+    client.emit('room_players', {
+      roomId,
+      players: allPlayers,
     });
     
-    this.logger.log(`User ${oderId} joined room ${roomId}`);
+    // Boshqa o'yinchilarga yangi o'yinchi haqida xabar berish
+    client.to(roomId).emit('player_joined', {
+      oderId,
+      userName,
+      players: allPlayers,
+    });
     
-    return { success: true, roomId };
+    this.logger.log(`User ${oderId} (${userName}) joined room ${roomId}. Total players: ${allPlayers.length}`);
+    
+    return { success: true, roomId, players: allPlayers };
   }
 
   @SubscribeMessage('leave_room')
