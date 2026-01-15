@@ -90,153 +90,61 @@ const LobbyPage: React.FC = () => {
       return;
     }
 
-    // Timeout bilan socket so'rov
-    const emitWithTimeout = (event: string, data: any, timeout = 3000): Promise<any> => {
-      return Promise.race([
-        socketService.emit(event, data),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Socket timeout')), timeout)
-        )
-      ]);
-    };
-
-    // Avval serverdan xona ma'lumotlarini olishga urinamiz
-    const fetchRoom = async () => {
-      try {
-        const response = await emitWithTimeout('get_room', { roomId });
-        console.log('Get room response:', response);
-        
-        if (response?.success && response.room) {
-          const serverRoom = response.room;
-          const formattedPlayers = (serverRoom.players || []).map((p: any, index: number) => ({
-            id: p.oderId,
-            oderId: (index + 1).toString(),
-            userId: p.oderId,
-            user: {
-              id: p.oderId,
-              firstName: p.userName || 'Mehmon',
-            }
-          }));
-          
-          setCurrentRoom({
-            id: serverRoom.id,
-            code: serverRoom.code,
-            name: serverRoom.name,
-            hostId: serverRoom.hostId,
-            host: {
-              id: serverRoom.hostId,
-              firstName: serverRoom.hostName,
-            },
-            minPlayers: serverRoom.minPlayers,
-            maxPlayers: serverRoom.maxPlayers,
-            discussionTime: 120,
-            votingTime: 60,
-            nightTime: 30,
-            storyVariant: '1',
-            status: serverRoom.status,
-            players: formattedPlayers,
-          });
-        } else if (user) {
-          // Xona yo'q - yangi xona yaratamiz
-          const newRoom = {
-            roomId: roomId,
-            name: `${user.firstName || 'Mehmon'}ning xonasi`,
-            hostId: user.id,
-            hostName: user.firstName || user.username || 'Mehmon',
-            minPlayers: 4,
-            maxPlayers: 10,
-          };
-          
-          try {
-            await emitWithTimeout('create_room', newRoom);
-            console.log('Room created:', newRoom);
-          } catch (e) {
-            console.log('Create room timeout, using local room');
+    // Agar xona yo'q bo'lsa, darhol lokal xona yaratamiz
+    if (!activeRoom && user) {
+      const localRoom = {
+        id: roomId,
+        code: roomId,
+        name: `${user.firstName || 'Mehmon'}ning xonasi`,
+        hostId: user.id,
+        host: {
+          id: user.id,
+          firstName: user.firstName || 'Mehmon',
+        },
+        minPlayers: 4,
+        maxPlayers: 10,
+        discussionTime: 120,
+        votingTime: 60,
+        nightTime: 30,
+        storyVariant: '1',
+        status: 'WAITING' as const,
+        players: [{
+          id: '1',
+          oderId: '1',
+          userId: user.id,
+          user: {
+            id: user.id,
+            firstName: user.firstName || 'Siz',
           }
-          
-          setCurrentRoom({
-            id: roomId,
-            code: roomId,
-            name: newRoom.name,
-            hostId: user.id,
-            host: {
-              id: user.id,
-              firstName: user.firstName || 'Mehmon',
-            },
-            minPlayers: 4,
-            maxPlayers: 10,
-            discussionTime: 120,
-            votingTime: 60,
-            nightTime: 30,
-            storyVariant: '1',
-            status: 'WAITING',
-            players: [{
-              id: '1',
-              oderId: '1',
-              userId: user.id,
-              user: {
-                id: user.id,
-                firstName: user.firstName || 'Siz',
-              }
-            }],
-          });
-        }
-      } catch (error) {
-        console.error('Fetch room error:', error);
-        // Socket ishlamasa, lokal xona yaratamiz
-        if (user && !activeRoom) {
-          setCurrentRoom({
-            id: roomId,
-            code: roomId,
-            name: `${user.firstName || 'Mehmon'}ning xonasi`,
-            hostId: user.id,
-            host: {
-              id: user.id,
-              firstName: user.firstName || 'Mehmon',
-            },
-            minPlayers: 4,
-            maxPlayers: 10,
-            discussionTime: 120,
-            votingTime: 60,
-            nightTime: 30,
-            storyVariant: '1',
-            status: 'WAITING',
-            players: [{
-              id: '1',
-              oderId: '1',
-              userId: user.id,
-              user: {
-                id: user.id,
-                firstName: user.firstName || 'Siz',
-              }
-            }],
-          });
-        }
-      }
-    };
+        }],
+      };
+      setCurrentRoom(localRoom);
+    }
 
     // Socket orqali xonaga qo'shilish
-    const joinRoom = async () => {
+    const joinRoom = () => {
       if (!user || isJoining) return;
       
       setIsJoining(true);
       
-      // Socket orqali xonaga qo'shilish - backend oderId kutadi
       socketService.emit('join_room', {
         roomId: roomId,
         oderId: user.id,
         userName: user.firstName || user.username || 'Mehmon',
       });
+      
+      // Server bilan sinxronlash urinib ko'riladi (background)
+      socketService.emit('create_room', {
+        roomId: roomId,
+        name: `${user.firstName || 'Mehmon'}ning xonasi`,
+        hostId: user.id,
+        hostName: user.firstName || user.username || 'Mehmon',
+        minPlayers: 4,
+        maxPlayers: 10,
+      });
     };
 
-    // Xona ma'lumotlarini olish va keyin qo'shilish
-    if (!activeRoom) {
-      fetchRoom().then(() => {
-        if (user) {
-          joinRoom();
-        }
-      });
-    } else if (user) {
+    if (user) {
       joinRoom();
     }
 
@@ -245,7 +153,7 @@ const LobbyPage: React.FC = () => {
     // Xonaga kirganda barcha o'yinchilar ro'yxatini olish
     socketService.on('room_players', (data: any) => {
       console.log('Room players received:', data);
-      if (data.players && activeRoom) {
+      if (data.players) {
         const formattedPlayers = data.players.map((p: any, index: number) => ({
           id: p.oderId,
           oderId: (index + 1).toString(),
