@@ -87,10 +87,20 @@ const LobbyPage: React.FC = () => {
       return;
     }
 
+    // Timeout bilan socket so'rov
+    const emitWithTimeout = (event: string, data: any, timeout = 3000): Promise<any> => {
+      return Promise.race([
+        socketService.emit(event, data),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Socket timeout')), timeout)
+        )
+      ]);
+    };
+
     // Avval serverdan xona ma'lumotlarini olishga urinamiz
     const fetchRoom = async () => {
       try {
-        const response = await socketService.emit('get_room', { roomId });
+        const response = await emitWithTimeout('get_room', { roomId });
         console.log('Get room response:', response);
         
         if (response?.success && response.room) {
@@ -134,8 +144,12 @@ const LobbyPage: React.FC = () => {
             maxPlayers: 10,
           };
           
-          await socketService.emit('create_room', newRoom);
-          console.log('Room created:', newRoom);
+          try {
+            await emitWithTimeout('create_room', newRoom);
+            console.log('Room created:', newRoom);
+          } catch (e) {
+            console.log('Create room timeout, using local room');
+          }
           
           setCurrentRoom({
             id: roomId,
@@ -153,11 +167,48 @@ const LobbyPage: React.FC = () => {
             nightTime: 30,
             storyVariant: '1',
             status: 'WAITING',
-            players: [],
+            players: [{
+              id: '1',
+              oderId: '1',
+              userId: user.id,
+              user: {
+                id: user.id,
+                firstName: user.firstName || 'Siz',
+              }
+            }],
           });
         }
       } catch (error) {
         console.error('Fetch room error:', error);
+        // Socket ishlamasa, lokal xona yaratamiz
+        if (user && !activeRoom) {
+          setCurrentRoom({
+            id: roomId,
+            code: roomId,
+            name: `${user.firstName || 'Mehmon'}ning xonasi`,
+            hostId: user.id,
+            host: {
+              id: user.id,
+              firstName: user.firstName || 'Mehmon',
+            },
+            minPlayers: 4,
+            maxPlayers: 10,
+            discussionTime: 120,
+            votingTime: 60,
+            nightTime: 30,
+            storyVariant: '1',
+            status: 'WAITING',
+            players: [{
+              id: '1',
+              oderId: '1',
+              userId: user.id,
+              user: {
+                id: user.id,
+                firstName: user.firstName || 'Siz',
+              }
+            }],
+          });
+        }
       }
     };
 
