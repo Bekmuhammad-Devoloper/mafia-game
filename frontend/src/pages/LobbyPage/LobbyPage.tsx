@@ -93,16 +93,11 @@ const LobbyPage: React.FC = () => {
       
       setIsJoining(true);
       
-      // Socket orqali xonaga qo'shilish
+      // Socket orqali xonaga qo'shilish - backend oderId kutadi
       socketService.emit('join_room', {
         roomId: roomId,
-        userId: user.id,
-        user: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          username: user.username,
-        }
+        oderId: user.id,
+        userName: user.firstName || user.username || 'Mehmon',
       });
     };
 
@@ -160,20 +155,38 @@ const LobbyPage: React.FC = () => {
       joinRoom();
     }
 
-    // Socket events
-    socketService.on('roomJoined', (data: any) => {
-      setCurrentRoom(data.room);
+    // Socket events - backend event nomlari: player_joined, player_left
+    socketService.on('player_joined', (data: any) => {
+      console.log('Player joined:', data);
+      // Yangi o'yinchini qo'shish
+      if (activeRoom && data.oderId !== user?.id) {
+        const newPlayer = {
+          id: data.oderId,
+          oderId: data.oderId,
+          userId: data.oderId,
+          user: {
+            id: data.oderId,
+            firstName: data.userName || 'Mehmon',
+          }
+        };
+        const currentPlayers = activeRoom.players || [];
+        if (!currentPlayers.some(p => p.oderId === data.oderId || p.userId === data.oderId)) {
+          updateRoom({ players: [...currentPlayers, newPlayer] });
+        }
+      }
     });
 
-    socketService.on('playerJoined', (data: any) => {
-      updateRoom({ players: data.players });
+    socketService.on('player_left', (data: any) => {
+      console.log('Player left:', data);
+      if (activeRoom) {
+        const updatedPlayers = (activeRoom.players || []).filter(
+          p => p.oderId !== data.oderId && p.userId !== data.oderId
+        );
+        updateRoom({ players: updatedPlayers });
+      }
     });
 
-    socketService.on('playerLeft', (data: any) => {
-      updateRoom({ players: data.players });
-    });
-
-    socketService.on('gameStarted', (_data: any) => {
+    socketService.on('game_started', (_data: any) => {
       navigate(`/game/${roomId}`);
     });
 
@@ -182,10 +195,9 @@ const LobbyPage: React.FC = () => {
     });
 
     return () => {
-      socketService.off('roomJoined');
-      socketService.off('playerJoined');
-      socketService.off('playerLeft');
-      socketService.off('gameStarted');
+      socketService.off('player_joined');
+      socketService.off('player_left');
+      socketService.off('game_started');
       socketService.off('error');
     };
   }, [roomId, navigate, setCurrentRoom, updateRoom, setError, activeRoom, user]);
