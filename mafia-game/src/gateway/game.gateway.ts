@@ -52,6 +52,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   
   // Room -> Players mapping (o'yinchilar ro'yxati)
   private roomPlayers: Map<string, Map<string, { oderId: string; userName: string }>> = new Map();
+  
+  // Room -> Room info (xona sozlamalari)
+  private roomInfo: Map<string, {
+    id: string;
+    code: string;
+    name: string;
+    hostId: string;
+    hostName: string;
+    minPlayers: number;
+    maxPlayers: number;
+    status: string;
+  }> = new Map();
 
   constructor(
     private gameService: GameService,
@@ -171,6 +183,63 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     });
     
     return { success: true };
+  }
+
+  @SubscribeMessage('create_room')
+  handleCreateRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: {
+      roomId: string;
+      name: string;
+      hostId: string;
+      hostName: string;
+      minPlayers: number;
+      maxPlayers: number;
+    },
+  ) {
+    const { roomId, name, hostId, hostName, minPlayers, maxPlayers } = payload;
+    
+    // Xona mavjud bo'lmasa, yangi yaratamiz
+    if (!this.roomInfo.has(roomId)) {
+      this.roomInfo.set(roomId, {
+        id: roomId,
+        code: roomId,
+        name,
+        hostId,
+        hostName,
+        minPlayers: minPlayers || 4,
+        maxPlayers: maxPlayers || 10,
+        status: 'WAITING',
+      });
+      
+      this.logger.log(`Room created: ${roomId} by ${hostName}`);
+    }
+    
+    return { success: true, room: this.roomInfo.get(roomId) };
+  }
+
+  @SubscribeMessage('get_room')
+  handleGetRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId: string },
+  ) {
+    const { roomId } = payload;
+    
+    const room = this.roomInfo.get(roomId);
+    const players = this.roomPlayers.get(roomId);
+    const allPlayers = players ? Array.from(players.values()) : [];
+    
+    if (room) {
+      return { 
+        success: true, 
+        room: {
+          ...room,
+          players: allPlayers,
+        }
+      };
+    }
+    
+    return { success: false, message: 'Room not found' };
   }
 
   // ============================================

@@ -87,6 +87,72 @@ const LobbyPage: React.FC = () => {
       return;
     }
 
+    // Avval serverdan xona ma'lumotlarini olishga urinamiz
+    const fetchRoom = async () => {
+      try {
+        const response = await socketService.emit('get_room', { roomId });
+        console.log('Get room response:', response);
+        
+        if (response?.success && response.room) {
+          const serverRoom = response.room;
+          const formattedPlayers = (serverRoom.players || []).map((p: any, index: number) => ({
+            id: p.oderId,
+            oderId: (index + 1).toString(),
+            userId: p.oderId,
+            user: {
+              id: p.oderId,
+              firstName: p.userName || 'Mehmon',
+            }
+          }));
+          
+          setCurrentRoom({
+            id: serverRoom.id,
+            code: serverRoom.code,
+            name: serverRoom.name,
+            hostId: serverRoom.hostId,
+            host: {
+              id: serverRoom.hostId,
+              firstName: serverRoom.hostName,
+            },
+            minPlayers: serverRoom.minPlayers,
+            maxPlayers: serverRoom.maxPlayers,
+            status: serverRoom.status,
+            players: formattedPlayers,
+          });
+        } else if (user) {
+          // Xona yo'q - yangi xona yaratamiz
+          const newRoom = {
+            roomId: roomId,
+            name: `${user.firstName || 'Mehmon'}ning xonasi`,
+            hostId: user.id,
+            hostName: user.firstName || user.username || 'Mehmon',
+            minPlayers: 4,
+            maxPlayers: 10,
+          };
+          
+          await socketService.emit('create_room', newRoom);
+          console.log('Room created:', newRoom);
+          
+          setCurrentRoom({
+            id: roomId,
+            code: roomId,
+            name: newRoom.name,
+            hostId: user.id,
+            host: {
+              id: user.id,
+              firstName: user.firstName || 'Mehmon',
+            },
+            minPlayers: 4,
+            maxPlayers: 10,
+            status: 'WAITING',
+            players: [],
+          });
+        }
+      } catch (error) {
+        console.error('Fetch room error:', error);
+      }
+    };
+
     // Socket orqali xonaga qo'shilish
     const joinRoom = async () => {
       if (!user || isJoining) return;
@@ -101,57 +167,14 @@ const LobbyPage: React.FC = () => {
       });
     };
 
-    // Agar xona ma'lumoti yo'q bo'lsa, demo xona yaratamiz
+    // Xona ma'lumotlarini olish va keyin qo'shilish
     if (!activeRoom) {
-      const demoRoom = {
-        id: roomId,
-        code: roomId,
-        name: user?.firstName ? `${user.firstName}ning xonasi` : 'Demo xona',
-        hostId: user?.id || 'demo-user',
-        host: {
-          id: user?.id || 'demo-user',
-          firstName: user?.firstName || 'Mehmon',
-        },
-        minPlayers: 4,
-        maxPlayers: 10,
-        discussionTime: 120,
-        votingTime: 60,
-        nightTime: 30,
-        storyVariant: '1',
-        status: 'WAITING' as const,
-        players: user ? [{
-          id: '1',
-          oderId: '1',
-          userId: user.id,
-          user: {
-            id: user.id,
-            firstName: user.firstName || 'Siz',
-            lastName: user.lastName,
-            username: user.username,
-          }
-        }] : [],
-      };
-      setCurrentRoom(demoRoom);
-    } else if (user && !activeRoom.players?.some(p => p.userId === user.id || p.user?.id === user.id)) {
-      // Agar user xonada yo'q bo'lsa, qo'shamiz
-      const newPlayer = {
-        id: Date.now().toString(),
-        oderId: ((activeRoom.players?.length || 0) + 1).toString(),
-        userId: user.id,
-        user: {
-          id: user.id,
-          firstName: user.firstName || 'Mehmon',
-          lastName: user.lastName,
-          username: user.username,
+      fetchRoom().then(() => {
+        if (user) {
+          joinRoom();
         }
-      };
-      updateRoom({ 
-        players: [...(activeRoom.players || []), newPlayer] 
       });
-    }
-    
-    // Socket orqali ham qo'shilishni urinib ko'ramiz
-    if (user) {
+    } else if (user) {
       joinRoom();
     }
 
