@@ -82,6 +82,9 @@ const LobbyPage: React.FC = () => {
   const activeRoom = currentRoom || room;
 
   useEffect(() => {
+    // Socket ulanishini boshlash
+    socketService.connect();
+    
     if (!roomId) {
       navigate('/');
       return;
