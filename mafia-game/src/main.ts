@@ -39,54 +39,21 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-
   // Manual Telegraf instance yaratish (nestjs-telegraf o'rniga)
   const configService = app.get(ConfigService);
   const token = configService.get('TELEGRAM_BOT_TOKEN');
-  const bot = new Telegraf(token);
-  
   const webhookDomain = process.env.TELEGRAM_WEBHOOK_DOMAIN || 'https://mafiya.bekmuhammad.uz';
   const webhookPath = '/webhook/telegram';
+  const webAppUrl = configService.get('TELEGRAM_WEBAPP_URL') || 'https://mafiya.bekmuhammad.uz';
   
-  try {
-    console.log('🤖 Telegram bot webhook rejimiga o\'rnatilmoqda...');
-    
-    // Webhook URL
-    const webhookUrl = `${webhookDomain}${webhookPath}`;
-    
-    // Webhook o'rnatish
-    await bot.telegram.setWebhook(webhookUrl, {
-      drop_pending_updates: true,
-      allowed_updates: ['message', 'callback_query'],
-    });
-    
-    console.log(`✅ Telegram bot webhook rejimida ishga tushdi!`);
-    console.log(`📡 Webhook URL: ${webhookUrl}`);
-    console.log('📱 Botga /start yuboring: https://t.me/MafiaVoiceUzBot');
-    
-    // Webhook verify
-    const webhookInfo = await bot.telegram.getWebhookInfo();
-    console.log('🔍 Webhook holati:', {
-      url: webhookInfo.url,
-      has_custom_certificate: webhookInfo.has_custom_certificate,
-      pending_update_count: webhookInfo.pending_update_count,
-    });
-  } catch (err: any) {
-    console.error('❌ Webhook o\'rnatish xatosi:', err.message);
-    console.log('📱 Server ishlayapti, API\'lar tayyor!');
-  }
-  
-  // Webhook endpoint
-  app.use(bot.webhookCallback(webhookPath));
+  const bot = new Telegraf(token);
   
   // Bot command handler'lari
   bot.command('start', async (ctx) => {
     const user = ctx.from;
     if (!user) return;
-
-    const webAppUrl = configService.get('TELEGRAM_WEBAPP_URL') || 'https://mafiya.bekmuhammad.uz';
+    
+    console.log('📨 /start buyrug\'i qabul qilindi:', user.first_name);
     
     const text = `
 🎭 <b>Mafia O'yini - Ovozli Hikoyachi bilan</b>
@@ -155,6 +122,37 @@ Mafia - bu klassik ijtimoiy detektiv o'yini. O'yinchilar ikki jamoaga bo'linadi:
     });
   });
   
+  // MUHIM: Webhook middleware'ni app.listen() dan OLDIN qo'shish kerak!
+  app.use(bot.webhookCallback(webhookPath));
+  
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+
+  // Webhook o'rnatish (server ishga tushgandan keyin)
+  try {
+    console.log('🤖 Telegram bot webhook rejimiga o\'rnatilmoqda...');
+    
+    const webhookUrl = `${webhookDomain}${webhookPath}`;
+    
+    await bot.telegram.setWebhook(webhookUrl, {
+      drop_pending_updates: true,
+      allowed_updates: ['message', 'callback_query'],
+    });
+    
+    console.log(`✅ Telegram bot webhook rejimida ishga tushdi!`);
+    console.log(`📡 Webhook URL: ${webhookUrl}`);
+    console.log('📱 Botga /start yuboring: https://t.me/MafiaVoiceUzBot');
+    
+    const webhookInfo = await bot.telegram.getWebhookInfo();
+    console.log('🔍 Webhook holati:', {
+      url: webhookInfo.url,
+      has_custom_certificate: webhookInfo.has_custom_certificate,
+      pending_update_count: webhookInfo.pending_update_count,
+    });
+  } catch (err: any) {
+    console.error('❌ Webhook o\'rnatish xatosi:', err.message);
+  }
+  
   // Graceful shutdown
   process.once('SIGINT', async () => {
     await bot.telegram.deleteWebhook();
@@ -162,7 +160,7 @@ Mafia - bu klassik ijtimoiy detektiv o'yini. O'yinchilar ikki jamoaga bo'linadi:
   process.once('SIGTERM', async () => {
     await bot.telegram.deleteWebhook();
   });
-  
+
   console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
