@@ -116,6 +116,10 @@ const LobbyPage: React.FC = () => {
             },
             minPlayers: serverRoom.minPlayers,
             maxPlayers: serverRoom.maxPlayers,
+            discussionTime: 120,
+            votingTime: 60,
+            nightTime: 30,
+            storyVariant: '1',
             status: serverRoom.status,
             players: formattedPlayers,
           });
@@ -144,6 +148,10 @@ const LobbyPage: React.FC = () => {
             },
             minPlayers: 4,
             maxPlayers: 10,
+            discussionTime: 120,
+            votingTime: 60,
+            nightTime: 30,
+            storyVariant: '1',
             status: 'WAITING',
             players: [],
           });
