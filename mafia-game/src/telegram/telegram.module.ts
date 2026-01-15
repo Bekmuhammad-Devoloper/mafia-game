@@ -25,6 +25,9 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
         // Agar proxy URL berilgan bo'lsa, agent yaratamiz
         const telegrafOptions: any = {
           token: configService.get('TELEGRAM_BOT_TOKEN') || '',
+          launchOptions: {
+            webhook: false, // Avtomatik ishga tushmasin - main.ts'da webhook qo'lda o'rnatamiz
+          },
         };
 
         if (proxyUrl) {
