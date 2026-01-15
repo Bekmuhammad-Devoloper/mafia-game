@@ -90,8 +90,10 @@ const LobbyPage: React.FC = () => {
       return;
     }
 
-    // Agar xona yo'q bo'lsa, darhol lokal xona yaratamiz
-    if (!activeRoom && user) {
+    // Lokal xona yaratish (agar yo'q bo'lsa)
+    const createLocalRoom = () => {
+      if (!user) return;
+      
       const localRoom = {
         id: roomId,
         code: roomId,
@@ -119,6 +121,11 @@ const LobbyPage: React.FC = () => {
         }],
       };
       setCurrentRoom(localRoom);
+    };
+
+    // Darhol lokal xona yaratamiz (user o'zini ko'rsin)
+    if (!activeRoom && user) {
+      createLocalRoom();
     }
 
     // Socket orqali xonaga qo'shilish
@@ -171,7 +178,7 @@ const LobbyPage: React.FC = () => {
     socketService.on('player_joined', (data: any) => {
       console.log('Player joined:', data);
       // Barcha o'yinchilar ro'yxatini yangilash
-      if (data.players && activeRoom) {
+      if (data.players) {
         const formattedPlayers = data.players.map((p: any, index: number) => ({
           id: p.oderId,
           oderId: (index + 1).toString(),
@@ -188,7 +195,7 @@ const LobbyPage: React.FC = () => {
     // O'yinchi ketganda
     socketService.on('player_left', (data: any) => {
       console.log('Player left:', data);
-      if (data.players && activeRoom) {
+      if (data.players) {
         const formattedPlayers = data.players.map((p: any, index: number) => ({
           id: p.oderId,
           oderId: (index + 1).toString(),
@@ -217,7 +224,8 @@ const LobbyPage: React.FC = () => {
       socketService.off('game_started');
       socketService.off('error');
     };
-  }, [roomId, navigate, setCurrentRoom, updateRoom, setError, activeRoom, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId, user?.id]);
 
   const displayRoom = activeRoom;
 
