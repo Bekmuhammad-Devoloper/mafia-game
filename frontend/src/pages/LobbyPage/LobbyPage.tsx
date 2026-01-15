@@ -161,7 +161,7 @@ const LobbyPage: React.FC = () => {
   };
 
   const handleCopyLink = () => {
-    const link = `https://t.me/MafiaGameUzBot?start=${roomId}`;
+    const link = `https://t.me/MafiaVoiceUzBot?start=${roomId}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
