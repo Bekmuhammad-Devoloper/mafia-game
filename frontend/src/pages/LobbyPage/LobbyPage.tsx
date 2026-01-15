@@ -163,7 +163,6 @@ const LobbyPage: React.FC = () => {
       if (data.players && activeRoom) {
         const formattedPlayers = data.players.map((p: any, index: number) => ({
           id: p.oderId,
-          oderId: p.oderId,
           oderId: (index + 1).toString(),
           userId: p.oderId,
           user: {
