@@ -76,6 +76,7 @@ const LobbyPage: React.FC = () => {
   const { currentRoom, setCurrentRoom, updateRoom, room } = useRoomStore();
   const { setError } = useUIStore();
   const [copied, setCopied] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
 
   // Agar currentRoom yo'q bo'lsa, room dan olamiz yoki demo yaratamiz
   const activeRoom = currentRoom || room;
@@ -86,35 +87,77 @@ const LobbyPage: React.FC = () => {
       return;
     }
 
+    // Socket orqali xonaga qo'shilish
+    const joinRoom = async () => {
+      if (!user || isJoining) return;
+      
+      setIsJoining(true);
+      
+      // Socket orqali xonaga qo'shilish
+      socketService.emit('join_room', {
+        roomId: roomId,
+        userId: user.id,
+        user: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+        }
+      });
+    };
+
     // Agar xona ma'lumoti yo'q bo'lsa, demo xona yaratamiz
     if (!activeRoom) {
       const demoRoom = {
         id: roomId,
         code: roomId,
-        name: 'Demo xona',
+        name: user?.firstName ? `${user.firstName}ning xonasi` : 'Demo xona',
         hostId: user?.id || 'demo-user',
         host: {
           id: user?.id || 'demo-user',
           firstName: user?.firstName || 'Mehmon',
         },
-        minPlayers: 6,
+        minPlayers: 4,
         maxPlayers: 10,
         discussionTime: 120,
         votingTime: 60,
         nightTime: 30,
         storyVariant: '1',
         status: 'WAITING' as const,
-        players: [{
+        players: user ? [{
           id: '1',
           oderId: '1',
-          userId: user?.id || 'demo-user',
+          userId: user.id,
           user: {
-            id: user?.id || 'demo-user',
-            firstName: user?.firstName || 'Siz',
+            id: user.id,
+            firstName: user.firstName || 'Siz',
+            lastName: user.lastName,
+            username: user.username,
           }
-        }],
+        }] : [],
       };
       setCurrentRoom(demoRoom);
+    } else if (user && !activeRoom.players?.some(p => p.userId === user.id || p.user?.id === user.id)) {
+      // Agar user xonada yo'q bo'lsa, qo'shamiz
+      const newPlayer = {
+        id: Date.now().toString(),
+        oderId: ((activeRoom.players?.length || 0) + 1).toString(),
+        userId: user.id,
+        user: {
+          id: user.id,
+          firstName: user.firstName || 'Mehmon',
+          lastName: user.lastName,
+          username: user.username,
+        }
+      };
+      updateRoom({ 
+        players: [...(activeRoom.players || []), newPlayer] 
+      });
+    }
+    
+    // Socket orqali ham qo'shilishni urinib ko'ramiz
+    if (user) {
+      joinRoom();
     }
 
     // Socket events
